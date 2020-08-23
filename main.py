@@ -17,6 +17,16 @@ def get_option_choice(options):
 
     return options[choice.upper()]
 
+# repeating prompt
+def get_user_input(label, required = True):
+    value = input(f'{label}: ') or None
+    while required and not value:
+        value  = input(f'{label}: ') or None
+    return value
+
+# get info for adding/deleting a bookmark
+
+
 
 if __name__ == '__main__':
     print('Welcome to Bark!')
