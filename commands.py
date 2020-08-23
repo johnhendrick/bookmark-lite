@@ -28,7 +28,7 @@ class AddBookmarkCommand:
     def __init__(self, content):
         time_now = datetime.utcnow().isoformat()
         content['date_added'] = time_now
-        db.add('bokmarks', content)
+        db.add('bookmarks', content)
         return 'Bookmark added!!'
 
 class ListBookmarksCommand:
