@@ -1,9 +1,14 @@
 
 import commands
+import os
+
+def clear_screen():
+    clear = 'cls' if os.name == 'nt' else 'clear'
+    os.system(clear)
 
 def print_options(options):
     for shortcut, option in options.items():
-        print(f'({shortcut}) {option}'
+        print(f'({shortcut}) {option}')
     print()
 
 def option_choice_is_valid(choice, options):
@@ -24,45 +29,80 @@ def get_user_input(label, required = True):
         value  = input(f'{label}: ') or None
     return value
 
-# get info for adding/deleting a bookmark
-
-
-
-if __name__ == '__main__':
-    print('Welcome to Bark!')
-    commands.CreateBookmarksTableCommand().execute()
-
-    options = {
-        'A':Option('Add a bookmark', commands.AddBookmarkCommand()),
-        'B':Option('List bookmarks by date', commands.ListBookmarksCommand()),
-        'T':Option('List bookmarks by title', commands.ListBookmarksCommand(order_by = 'title')),
-        'D':Option('Delete a bookmark', commands.DeleteBookmarkCommand()),
-        'Q':Option('Quit', commands.QuitCommand()),
+#get information of new bookmark
+def get_new_bookmark_data():
+    return{
+        'title': get_user_input('Title'),
+        'url': get_user_input('URL'),
+        'notes': get_user_input('Notes', required= False),
     }
-    print_options(options)
 
-    chosen_option = get_option_choice(options)
-    chosen_option.choose()   # <- ?????
+#get information to delete
+def get_bookmark_id_for_deletion():
+    return get_user_input('Enter bookmark ID to delete')
 
+
+def print_bookmarks(bookmarks):
+    for bookmark in bookmarks:
+        print('\t'.join(
+            str(field) if field else ''
+            for field in bookmark
+        ))
 
 class Option:
-""" 
-print key for user to enter to choose opiton
-print option text
-check if user input matches an option, choose option
-"""
+    '''
+    print key for user to enter to choose opiton
+    print option text
+    check if user input matches an option, choose option'''
+
     def __init__(self, name, command, prep_call = None):
         self.name = name
         self.command = command
         self.prep_call = prep_call  #optional prep step before executing command
 
+    def _handle_message(self, message):
+        if isinstance(message, list):
+            print_bookmarks(message)
+        else:
+            print(message)
+            
     def choose(self):
         data = self.prep_call() if self.prep_call else None
+        print(f'passing data : {data}')
         message = self.command.execute(data) if data else self.command.execute()
-        print(message)
-
+        self._handle_message(message)
 
     def __str__(self):
         return self.name
 
+def loop():
 
+    
+    options = {
+        'A':Option('Add a bookmark', commands.AddBookmarkCommand(), prep_call = get_new_bookmark_data ),
+        'B':Option('List bookmarks by date', commands.ListBookmarksCommand()),
+        'T':Option('List bookmarks by title', commands.ListBookmarksCommand(order_by = 'title')),
+        'D':Option('Delete a bookmark', commands.DeleteBookmarkCommand(), prep_call= get_bookmark_id_for_deletion),
+        'Q':Option('Quit', commands.QuitCommand()),
+    }
+
+    clear_screen()
+    print('Welcome to Bark!')
+
+    print_options(options)
+
+    chosen_option = get_option_choice(options)
+    
+    clear_screen()
+    chosen_option.choose()   # <- ?????
+
+
+    _ =  input('Press ENTER to return to menu')
+
+
+if __name__ == '__main__':
+
+    commands.CreateBookmarksTableCommand().execute()
+
+    while True:
+        loop()

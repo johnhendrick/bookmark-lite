@@ -1,7 +1,7 @@
 import sys
 
 from database import DatabaseManager
-
+from datetime import datetime
 
 
 #create object instance as db
@@ -21,15 +21,15 @@ class CreateBookmarksTableCommand:
         )
 
 #to add bookmark, pass data from presenetation layer to persistence layer
-from datetime import datetime
 
 class AddBookmarkCommand:
 
-    def __init__(self, content):
-        time_now = datetime.utcnow().isoformat()
-        content['date_added'] = time_now
-        db.add('bookmarks', content)
-        return 'Bookmark added!!'
+    def execute(self, data):
+        data['date_added'] = datetime.utcnow().isoformat() 
+        print(f'passing data : {data}')
+        db.add('bookmarks', data)  
+        return 'Bookmark added!'  
+
 
 class ListBookmarksCommand:
 
