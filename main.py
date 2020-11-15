@@ -2,6 +2,7 @@
 import commands
 import os
 
+
 def clear_screen():
     clear = 'cls' if os.name == 'nt' else 'clear'
     os.system(clear)
@@ -29,6 +30,16 @@ def get_user_input(label, required = True):
         value  = input(f'{label}: ') or None
     return value
 
+def get_github_import_options():
+    return {
+        'github_username': get_user_input('GitHub username'),
+        'preserve_timestamps':
+        get_user_input(
+            'Preserve timestamps [Y/n]',
+            required=False
+        ) in {'Y', 'y', None},
+    }
+
 #get information of new bookmark
 def get_new_bookmark_data():
     return{
@@ -48,6 +59,11 @@ def print_bookmarks(bookmarks):
             str(field) if field else ''
             for field in bookmark
         ))
+
+# github API extension: get github username, import stars
+# option to preserve timestamps of original stars
+# trigger a corresponding command
+
 
 class Option:
     '''
@@ -83,6 +99,7 @@ def loop():
         'B':Option('List bookmarks by date', commands.ListBookmarksCommand()),
         'T':Option('List bookmarks by title', commands.ListBookmarksCommand(order_by = 'title')),
         'D':Option('Delete a bookmark', commands.DeleteBookmarkCommand(), prep_call= get_bookmark_id_for_deletion),
+        'G':Option('Import Github stars', commands.getGSCommand() , prep_call =  get_github_import_options ),
         'Q':Option('Quit', commands.QuitCommand()),
     }
 
