@@ -29,10 +29,10 @@ class AddBookmarkCommand:
         data['date_added'] = timestamp or datetime.utcnow().isoformat()   #use timestamp where available
         print(f'passing data : {data}')
         db.add('bookmarks', data)  
-        return 'Bookmark added!'  
+        return True, None    #returns True status and none result  
 
 class getGSCommand:
-
+    # get Git Stars
     def _extract_bookmark_info(self, repo):
         return{
             'title': repo['name'],
@@ -77,7 +77,8 @@ class ListBookmarksCommand:
         self.order_by = order_by
     
     def execute(self):
-        return db.select('bookmarks', order_by = self.order_by).fetchall()
+        # return now returns bool status of execute method followed by results 
+        return True, db.select('bookmarks', order_by = self.order_by).fetchall()
 
 class DeleteBookmarkCommand:
 
